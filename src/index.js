@@ -4,6 +4,9 @@ const path = require('path');
 const cors = require('cors');
 const dbConf = require('./config/db');
 const app = express();
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 // estratégia para utilização do protocolo http e socket
 // necessário para desaclopar a aplicação permitindo que ele ouça tanto o http quanto o websocket
@@ -12,7 +15,10 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 // define a porta para a qual a aplicação irá servir os dados
-server.listen(3333);
+server_port = process.env.PORT || 3333;
+server.listen(server_port, function() {
+	console.log('Listening on port %d', server_port);
+});
 
 // estabelece a conexão com o banco de dados MongoDB hospedado no MongoDB Atlas Cloud
 mongoose.connect(dbConf.mongo.getString(), dbConf.mongo.options);
