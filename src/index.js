@@ -2,7 +2,6 @@ require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
 const cors = require('cors');
 const dbConf = require('./config/db');
 const request = require('request');
@@ -34,9 +33,13 @@ app.use((req, resp, next) => {
 	next();
 });
 
-const static_path = path.resolve(__dirname, '..', 'upload', 'resized');
+// utiliza o 'cors' para tornar a backend acessível a outros apps em dominios diferentes
+app.use(cors());
+
+// cria uma rota para obtenção das images no S3
 app.get('/files/:filename', function(req, res) {
 	const url = `${process.env.AWS_S3_OBJECT_BASE_URL}/${req.params.filename}`;
+	console.log(url);
 	request(url).pipe(res);
 });
 
@@ -45,9 +48,6 @@ app.all('*.(svg|png|jpg|jpeg|ico)', function(req, res) {
 	const url = process.env.AWS_S3_OBJECT_BASE_URL + req.url;
 	request(url).pipe(res);
 });
-
-// utiliza o 'cors' para tornar a backend acessível a outros apps em dominios diferentes
-app.use(cors());
 
 // informa o arquivo onde as rotas estão configuradas
 app.use(require('./routes'));
