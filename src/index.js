@@ -6,6 +6,7 @@ const path = require('path');
 const cors = require('cors');
 const dbConf = require('./config/db');
 const request = require('request');
+const bodyParser = require('body-parser');
 const app = express();
 
 // estratégia para utilização do protocolo http e socket
@@ -22,6 +23,9 @@ server.listen(server_port, function() {
 
 // estabelece a conexão com o banco de dados MongoDB hospedado no MongoDB Atlas Cloud
 mongoose.connect(dbConf.mongo.getString(), dbConf.mongo.options);
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // cria um middleware para disponibilizar o io no request da aplicação
 // o next permite que, ao interceptar esta requisição, prossiga para os demais, caso contrário, ia dá um stop aqui mesmo

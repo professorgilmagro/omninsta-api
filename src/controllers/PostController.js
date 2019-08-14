@@ -1,7 +1,6 @@
 const Post = require('../models/Post');
-const sharp = require('sharp');
-const path = require('path');
-const fs = require('fs');
+const S3File = require('../helpers/S3File');
+const md5String = require('../helpers/MD5StringParse');
 
 module.exports = {
 	async index(req, res) {
@@ -10,28 +9,19 @@ module.exports = {
 	},
 
 	async store(req, res) {
+		const filename = `${md5String.parse(req.file.originalname)}.jpg`;
 		const { author, place, description, hashtags } = req.body;
-		// console.table(req.file);
-		// return;
-		// const { filename: image } = req.file;
-		// const [name] = image.split('.');
-		// const newFileName = `${name}.jpg`;
 
-		// redimenciona a imagem e salva na pasta 'resized'
-		// await sharp(req.file.path)
-		// 	.resize(500)
-		// 	.jpeg({ quality: 70 })
-		// 	.toFile(path.resolve(req.file.destination, 'resized', newFileName));
-
-		// apaga o arquivo original depois que ele foi redimensionado
-		// fs.unlinkSync(req.file.path);
+		await S3File.upload(req.file.path, filename, {
+			resize: { width: 500, height: null }
+		});
 
 		const post = await Post.create({
 			author,
 			place,
 			description,
 			hashtags,
-			image: req.file.originalname
+			image: filename
 		});
 
 		req.io.emit('post', post);

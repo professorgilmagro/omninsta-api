@@ -1,5 +1,0 @@
-*
-    Ignora os arquivos dentro da pasta upload e resized
-*/
-!.gitignore
-!resized
