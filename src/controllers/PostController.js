@@ -11,25 +11,27 @@ module.exports = {
 
 	async store(req, res) {
 		const { author, place, description, hashtags } = req.body;
-		const { filename: image } = req.file;
-		const [name] = image.split('.');
-		const newFileName = `${name}.jpg`;
+		// console.table(req.file);
+		// return;
+		// const { filename: image } = req.file;
+		// const [name] = image.split('.');
+		// const newFileName = `${name}.jpg`;
 
 		// redimenciona a imagem e salva na pasta 'resized'
-		await sharp(req.file.path)
-			.resize(500)
-			.jpeg({ quality: 70 })
-			.toFile(path.resolve(req.file.destination, 'resized', newFileName));
+		// await sharp(req.file.path)
+		// 	.resize(500)
+		// 	.jpeg({ quality: 70 })
+		// 	.toFile(path.resolve(req.file.destination, 'resized', newFileName));
 
 		// apaga o arquivo original depois que ele foi redimensionado
-		fs.unlinkSync(req.file.path);
+		// fs.unlinkSync(req.file.path);
 
 		const post = await Post.create({
 			author,
 			place,
 			description,
 			hashtags,
-			image: newFileName
+			image: req.file.originalname
 		});
 
 		req.io.emit('post', post);

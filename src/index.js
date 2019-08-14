@@ -1,12 +1,12 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const cors = require('cors');
 const dbConf = require('./config/db');
+const request = require('request');
 const app = express();
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 // estratégia para utilização do protocolo http e socket
 // necessário para desaclopar a aplicação permitindo que ele ouça tanto o http quanto o websocket
@@ -30,9 +30,14 @@ app.use((req, resp, next) => {
 	next();
 });
 
-// cria a rota para arquivos estáticos (images que estão na pasta upload/resized)
 const static_path = path.resolve(__dirname, '..', 'upload', 'resized');
 app.use('/files', express.static(static_path));
+
+// cria a rota para arquivos estáticos de images que estão no AWS S3
+app.all('*.(svg|png|jpg|jpeg|ico)', function(req, res) {
+	const url = process.env.AWS_S3_OBJECT_BASE_URL + req.url;
+	request(url).pipe(res);
+});
 
 // utiliza o 'cors' para tornar a backend acessível a outros apps em dominios diferentes
 app.use(cors());
