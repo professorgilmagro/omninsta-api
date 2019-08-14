@@ -13,6 +13,7 @@ class S3File {
 			secretAccessKey: process.env.AWS_SECRET_ACESS_KEY,
 			accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 			region: process.env.AWS_REGION,
+			ACL: 'public-read',
 			ContentType: 'image/jpeg'
 		};
 

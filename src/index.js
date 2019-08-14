@@ -35,7 +35,10 @@ app.use((req, resp, next) => {
 });
 
 const static_path = path.resolve(__dirname, '..', 'upload', 'resized');
-app.use('/files', express.static(static_path));
+app.get('/files/:filename', function(req, res) {
+	const url = `${process.env.AWS_S3_OBJECT_BASE_URL}/${req.params.filename}`;
+	request(url).pipe(res);
+});
 
 // cria a rota para arquivos estáticos de images que estão no AWS S3
 app.all('*.(svg|png|jpg|jpeg|ico)', function(req, res) {
