@@ -17,7 +17,17 @@ class S3File {
 			ContentType: 'image/jpeg'
 		};
 
+		this.bucketName = process.env.AWS_BUCKET_NAME;
 		this.s3 = new aws.S3(this.config);
+	}
+
+	fetchFromS3(filename, res) {
+		const params = { Bucket: this.bucketName, Key: filename };
+		this.s3.getObject(params, (err, data) => {
+			res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+			res.write(data.Body, 'binary');
+			res.end(null, 'binary');
+		});
 	}
 
 	sentToS3(params, filepath, resolve) {
@@ -35,7 +45,7 @@ class S3File {
 			let fileBinaryString = fs.readFileSync(filepath, null);
 			let params = {
 				Body: fileBinaryString,
-				Bucket: process.env.AWS_BUCKET_NAME,
+				Bucket: this.bucketName,
 				Key: name
 			};
 

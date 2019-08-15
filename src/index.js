@@ -36,18 +36,5 @@ app.use((req, resp, next) => {
 // utiliza o 'cors' para tornar a backend acessível a outros apps em dominios diferentes
 app.use(cors());
 
-// cria uma rota para obtenção das images no S3
-app.get('/files/:filename', function(req, res) {
-	const url = `${process.env.AWS_S3_OBJECT_BASE_URL}/${req.params.filename}`;
-	console.log(url);
-	request(url).pipe(res);
-});
-
-// cria a rota para arquivos estáticos de images que estão no AWS S3
-app.all('*.(svg|png|jpg|jpeg|ico)', function(req, res) {
-	const url = process.env.AWS_S3_OBJECT_BASE_URL + req.url;
-	request(url).pipe(res);
-});
-
 // informa o arquivo onde as rotas estão configuradas
 app.use(require('./routes'));
